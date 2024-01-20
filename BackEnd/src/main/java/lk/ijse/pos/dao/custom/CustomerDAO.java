@@ -1,4 +1,7 @@
 package lk.ijse.pos.dao.custom;
 
-public interface CustomerDAO {
+import lk.ijse.pos.dao.CrudDAO;
+import lk.ijse.pos.entity.Customer;
+
+public interface CustomerDAO<T,ID> extends CrudDAO<Customer,String> {
 }
