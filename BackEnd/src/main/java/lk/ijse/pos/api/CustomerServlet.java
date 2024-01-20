@@ -27,12 +27,12 @@ public class CustomerServlet extends HttpServlet {
         if ((info.equals("getall"))) {
             getAll(resp);
         } else if ((info.equals("search"))) {
-            search(req,resp);
+            //search(req,resp);
         }
 
     }
 
-    private void search(HttpServletRequest req,HttpServletResponse resp) throws IOException {
+   /* private void search(HttpServletRequest req,HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         Connection con = null;
         String id = req.getParameter("cusId");
@@ -58,35 +58,13 @@ public class CustomerServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to load the customer!");
         }
     }
-
+*/
     private void getAll(HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
-        Connection con = null;
 
-        ServletContext sc = getServletContext();
-        BasicDataSource dataSource = (BasicDataSource)sc.getAttribute("myDataSource");
-        try {
-            con = DBConnection.getInstance().getConnection();
-            String sql = "SELECT * FROM customer";
-            ResultSet resultSet = con.prepareStatement(sql).executeQuery();
-            ArrayList<Customer> customerAr = new ArrayList<>();
-            Jsonb jsonb = JsonbBuilder.create();
-            while (resultSet.next()) {
-                Customer customer = new Customer(resultSet.getString(1), resultSet.getString(2),
-                        resultSet.getString(3), resultSet.getDouble(4));
-                customerAr.add(customer);
-            }
-            jsonb.toJson(customerAr,resp.getWriter());
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to load the customers!");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to load the customers!");
-        }
     }
 
-    @Override
+   /* @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Jsonb jsonb = JsonbBuilder.create();
         Customer customer = jsonb.fromJson(req.getReader(), Customer.class);
@@ -212,5 +190,5 @@ public class CustomerServlet extends HttpServlet {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
 }
