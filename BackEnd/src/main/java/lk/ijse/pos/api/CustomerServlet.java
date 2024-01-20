@@ -2,6 +2,9 @@ package lk.ijse.pos.api;
 
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import lk.ijse.pos.bo.BoFactory;
+import lk.ijse.pos.bo.custom.CustomerBO;
+import lk.ijse.pos.dto.CustomerDTO;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.servlet.ServletContext;
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 
 @WebServlet(value = "/customer")
 public class CustomerServlet extends HttpServlet {
+    CustomerBO customerBO = (CustomerBO) BoFactory.getBoFactory().getBO(BoFactory.BOTypes.CUSTOMER);
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -61,6 +65,16 @@ public class CustomerServlet extends HttpServlet {
 */
     private void getAll(HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
+        Jsonb jsonb = JsonbBuilder.create();
+        try {
+            ArrayList<CustomerDTO> customerAr = customerBO.getAllCustomers();
+            jsonb.toJson(customerAr,resp.getWriter());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
