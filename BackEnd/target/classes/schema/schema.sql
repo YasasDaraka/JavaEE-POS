@@ -6,3 +6,10 @@ CREATE TABLE customer(
                          cusAddress varchar(50),
                          CONSTRAINT PRIMARY KEY (cusID)
 );
+CREATE TABLE item(
+                         itmCode varchar(10),
+                         itmName varchar(50),
+                         itmPrice decimal(10,2),
+                         itmQTY int(10),
+                         CONSTRAINT PRIMARY KEY (itmCode)
+);
