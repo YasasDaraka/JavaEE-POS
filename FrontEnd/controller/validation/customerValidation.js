@@ -1,29 +1,36 @@
-const CUS_ID_REGEX = /^(C00-)[0-9]{4}$/;
+const CUS_ID_REGEX = /^C00-(0*[1-9]\d{0,2})$/;
 const CUS_NAME_REGEX = /^[A-Za-z ]{5,}$/;
-const CUS_ADDRESS_REGEX = /^[A-Za-z0-9 ]{7,}$/;
+const CUS_ADDRESS_REGEX = /^[A-Za-z0-9 ]{5,}$/;
 
 let c_vArray = new Array();
-c_vArray.push({field: $("#cusID"), regEx: CUS_ID_REGEX ,error: $("#cusIDError")});
-c_vArray.push({field: $("#cusName"), regEx: CUS_NAME_REGEX ,error: $("#cusNameError")});
-c_vArray.push({field: $("#cusAddress"), regEx: CUS_ADDRESS_REGEX ,error: $("#cusAddressError")});
+c_vArray.push({field: $("#customerID"), regEx: CUS_ID_REGEX ,error: $("#cusIDError")});
+c_vArray.push({field: $("#customerName"), regEx: CUS_NAME_REGEX ,error: $("#cusNameError")});
+c_vArray.push({field: $("#customerAddress"), regEx: CUS_ADDRESS_REGEX ,error: $("#cusAddressError")});
 
 function clearCustomerInputFields() {
-    $("#cusID,#cusName,#cusAddress").val("");
-    $("#cusID,#cusName,#cusAddress").css("border", "1px solid #ced4da");
-    $("#cusID").focus();
-    setBtn();
+    $("#customerID,#customerName,#customerAddress").val("");
+    $("#customerID,#customerName,#customerAddress").css("border", "1px solid #ced4da");
+    $("#customerID").focus();
+    //setBtn();
 }
 
-setBtn();
+//setBtn();
 function setClBtn(){
-    if ($("#cusID,#cusName,#cusAddress").val()==""){
-        $("#cusClear").prop("disabled", true);
-    }else{
+    var any = false;
+    $("#customerID, #customerName, #customerAddress").each(function () {
+        if ($(this).val().trim() !== "") {
+            any= true;
+            return false;
+        }
+    });
+    if (any) {
         $("#cusClear").prop("disabled", false);
+    } else {
+        $("#cusClear").prop("disabled", true);
     }
 }
-$("#cusID,#cusName,#cusAddress").on("keydown keyup", function (e) {
-
+setClBtn();
+function events(e) {
     setClBtn();
     let indexNo = c_vArray.indexOf(c_vArray.find((c) => c.field.attr("id") == e.target.id));
 
@@ -33,7 +40,7 @@ $("#cusID,#cusName,#cusAddress").on("keydown keyup", function (e) {
 
     checkValidations(c_vArray[indexNo]);
 
-    setBtn();
+   // setBtn();
 
     if (e.key == "Enter") {
 
@@ -47,8 +54,16 @@ $("#cusID,#cusName,#cusAddress").on("keydown keyup", function (e) {
             }
         }
     }
+}
+
+$("#customerName,#customerAddress,#customerSalary").on("keydown keyup", function (e) {
+    events(e);
 });
 
+$("#customerID").on("keydown keyup", function (e) {
+    events(e);
+    searchCustomer($("#customerID").val());
+});
 
 function checkValidations(object) {
     if (object.regEx.test(object.field.val())) {
@@ -65,9 +80,9 @@ function setBorder(bol, ob) {
             ob.field.css("border", "2px solid red");
             let check = ob.field.attr('id');
             switch (check) {
-                case "cusID" : ob.error.text("cus-Id is a required field: C00-000"); break
-                case "cusName" : ob.error.text("cus-Name is a required field: Minimum 5,Max 20,Spaces Allowed"); break
-                case "cusAddress" : ob.error.text("cus-Address is a required field: Minimum 7"); break
+                case "customerID" : ob.error.text("cus-Id is a required field: C00-"); break
+                case "customerName" : ob.error.text("cus-Name is a required field: Minimum 5,Max 20,Spaces Allowed"); break
+                case "customerAddress" : ob.error.text("cus-Address is a required field: Minimum 5"); break
             }
         } else {
             ob.field.css("border", "1px solid #ced4da");
@@ -92,27 +107,39 @@ function checkAll() {
     return true;
 }
 
-function setBtn() {
+/*function setBtn() {
     setClBtn();
+    $("#cusSave").prop("disabled", true);
     $("#cusDelete").prop("disabled", true);
     $("#cusUpdate").prop("disabled", true);
-    let id = $("#cusID").val();
-
-    if (searchCustomer(id) == undefined) {
-        $("#cusDelete").prop("disabled", true);
-        $("#cusUpdate").prop("disabled", true);
-        if (checkAll()) {
-            $("#cusSave").prop("disabled", false);
-        } else {
-            $("#cusSave").prop("disabled", true);
-        }
-    }else{
-        $("#cusDelete").prop("disabled", false);
-        if (checkAll()) {
-            $("#cusUpdate").prop("disabled", false);
-        } else {
-            $("#cusUpdate").prop("disabled", true);
-        }
+    $("#cusSearch").prop("disabled", true);
+    let id = $("#customerID").val();
+    if ($("#customerID").val() != "" && CUS_ID_REGEX.test($("#customerID").val())){
+        $("#cusSearch").prop("disabled", false);
+    }else {
+        $("#cusSearch").prop("disabled", true);
     }
+    validCustomer(id)
+        .then(function () {
+            $("#cusDelete").prop("disabled", false);
+            if (checkAll()) {
+                $("#cusUpdate").prop("disabled", false);
+            } else {
+                $("#cusUpdate").prop("disabled", true);
+            }
+        })
+        .catch(function () {
+            $("#cusDelete").prop("disabled", true);
+            $("#cusUpdate").prop("disabled", true);
+            if (checkAll()) {
+                $("#cusSave").prop("disabled", false);
+            } else {
+                $("#cusSave").prop("disabled", true);
+            }
+        });
+}*/
 
-}
+$("#cusClear").click(function () {
+    clearCustomerInputFields();
+    $("#cusIDError,#cusNameError,#cusAddressError,#cusSalaryError").text("");
+});

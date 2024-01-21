@@ -36,11 +36,18 @@ public class CustomerServlet extends HttpServlet {
             Jsonb jsonb = JsonbBuilder.create();
         try {
             CustomerDTO customer = customerBO.searchCustomer(id);
-            jsonb.toJson(customer,resp.getWriter());
+            if(customer != null){
+                jsonb.toJson(customer,resp.getWriter());
+                resp.setStatus(HttpServletResponse.SC_OK);
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -49,11 +56,19 @@ public class CustomerServlet extends HttpServlet {
         Jsonb jsonb = JsonbBuilder.create();
         try {
             ArrayList<CustomerDTO> customerAr = customerBO.getAllCustomers();
-            jsonb.toJson(customerAr,resp.getWriter());
+
+            if(customerAr != null){
+                jsonb.toJson(customerAr,resp.getWriter());
+                resp.setStatus(HttpServletResponse.SC_OK);
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -116,7 +131,7 @@ public class CustomerServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @Override
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         System.out.println("put invoke");
@@ -137,6 +152,7 @@ public class CustomerServlet extends HttpServlet {
             return;
         }
         try {
+            System.out.println("put validation complete");
             boolean isSaved = customerBO.updateCustomer(new CustomerDTO(id,name,address));
             if (isSaved){
                 System.out.println("Customer Update");
