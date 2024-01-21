@@ -58,14 +58,13 @@ public class CustomerServlet extends HttpServlet {
 
     }
 
-   /* @Override
+    @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Jsonb jsonb = JsonbBuilder.create();
-        Customer customer = jsonb.fromJson(req.getReader(), Customer.class);
+        CustomerDTO customer = jsonb.fromJson(req.getReader(), CustomerDTO.class);
         String id = customer.getId();
         String name = customer.getName();
         String address = customer.getAddress();
-        double salary = customer.getSalary();
         if(id==null || !id.matches("C00-(0*[1-9]\\d{0,2})")){
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID is empty or invalid");
             return;
@@ -75,22 +74,11 @@ public class CustomerServlet extends HttpServlet {
         } else if (address == null || address.length() < 3) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Address is empty or invalid");
             return;
-        }else if (salary == 0 ) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Salary is empty or invalid");
-            return;
         }
         System.out.println(customer);
         try {
-            Connection con = DBConnection.getInstance().getConnection();
-            String sql = "INSERT INTO customer(cusId, cusName, cusAddress, cusSalary) " +
-                    "VALUES(?, ?, ?, ?)";
-            PreparedStatement pstm = con.prepareStatement(sql);
-            pstm.setString(1, id);
-            pstm.setString(2, name);
-            pstm.setString(3, address);
-            pstm.setDouble(4, salary);
-
-            if (pstm.executeUpdate() > 0){
+            boolean isSaved = customerBO.saveCustomer(new CustomerDTO(id,name,address));
+            if (isSaved){
                 System.out.println("Customer added");
                 resp.setStatus(HttpServletResponse.SC_CREATED);
             }
@@ -103,7 +91,7 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
-    @Override
+   /* @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Connection con = null;
         String cusID = req.getParameter("cusId");
