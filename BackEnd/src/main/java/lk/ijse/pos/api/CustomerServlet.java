@@ -5,64 +5,45 @@ import jakarta.json.bind.JsonbBuilder;
 import lk.ijse.pos.bo.BoFactory;
 import lk.ijse.pos.bo.custom.CustomerBO;
 import lk.ijse.pos.dto.CustomerDTO;
-import org.apache.commons.dbcp2.BasicDataSource;
-
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 @WebServlet(value = "/customer")
 public class CustomerServlet extends HttpServlet {
-    CustomerBO customerBO = (CustomerBO) BoFactory.getBoFactory().getBO(BoFactory.BOTypes.CUSTOMER);
+    CustomerBO customerBO = BoFactory.getBoFactory().getBO(BoFactory.BOTypes.CUSTOMER);
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String info = req.getParameter("info");
 
         if ((info.equals("getall"))) {
             getAll(resp);
         } else if ((info.equals("search"))) {
-            //search(req,resp);
+            search(req,resp);
         }
 
     }
 
-   /* private void search(HttpServletRequest req,HttpServletResponse resp) throws IOException {
+    private void search(HttpServletRequest req,HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
-        Connection con = null;
         String id = req.getParameter("cusId");
         System.out.println(id);
-        try {
-            con = DBConnection.getInstance().getConnection();
-            String sql = "SELECT * FROM customer WHERE cusId = ?";
-            PreparedStatement pstm = con.prepareStatement(sql);
-            pstm.setString(1, id);
-            ResultSet resultSet = pstm.executeQuery();
             Jsonb jsonb = JsonbBuilder.create();
-            if (resultSet.next()) {
-                Customer customer = new Customer(resultSet.getString(1), resultSet.getString(2),
-                        resultSet.getString(3), resultSet.getDouble(4));
-
-                jsonb.toJson(customer, resp.getWriter());
-            }
+        try {
+            CustomerDTO customer = customerBO.searchCustomer(id);
+            jsonb.toJson(customer,resp.getWriter());
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to load the customer!");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to load the customer!");
         }
+
     }
-*/
     private void getAll(HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         Jsonb jsonb = JsonbBuilder.create();
@@ -74,7 +55,6 @@ public class CustomerServlet extends HttpServlet {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
 
     }
 
