@@ -33,13 +33,14 @@ public class ItemDAOImpl<T,ID> implements ItemDAO<Item,String> {
     }
 
     @Override
-    public boolean delete(String s) throws SQLException, ClassNotFoundException {
-        return false;
+    public boolean delete(String id) throws SQLException, ClassNotFoundException {
+        return SQLUtil.execute("DELETE FROM item WHERE itmCode = ?",rs->null,id);
     }
 
     @Override
     public boolean update(Item dto) throws SQLException, ClassNotFoundException {
-        return false;
+        return SQLUtil.execute("UPDATE item SET itmName = ?, itmPrice = ?,itmQTY = ? WHERE itmCode = ?",
+                rs->null,dto.getItmName(),dto.getItmPrice(),dto.getItmQTY(),dto.getItmCode());
     }
 
     @Override

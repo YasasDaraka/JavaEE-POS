@@ -4,6 +4,7 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import lk.ijse.pos.bo.BoFactory;
 import lk.ijse.pos.bo.custom.ItemBO;
+import lk.ijse.pos.dto.CustomerDTO;
 import lk.ijse.pos.dto.ItemDTO;
 
 import javax.servlet.ServletException;
@@ -106,5 +107,47 @@ public class ItemServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-
+    @Override
+    public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("put invoke");
+        Jsonb jsonb = JsonbBuilder.create();
+        ItemDTO item = jsonb.fromJson(req.getReader(), ItemDTO.class);
+        String code = item.getItmCode();
+        String name = item.getItmName();
+        String price = String.valueOf(item.getItmPrice());
+        String qty = String.valueOf(item.getItmQTY());
+        System.out.println(code+name+price+qty);
+        if(code==null || !code.matches("I00-(0*[1-9]\\d{0,2})")){
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemCode is empty or invalid");
+            return;
+        } else if (name == null || !name.matches("[A-Za-z ]{5,}")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemName is empty or invalid");
+            return;
+        } else if ( !price.matches("[1-9]\\d*(\\.\\d+)?")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Price is empty or invalid");
+            return;
+        }
+        else if (!qty.matches("[1-9]\\d*")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemQTY is empty or invalid");
+            return;
+        }
+        try {
+            System.out.println("put validation complete");
+            boolean isSaved = itemBO.updateItem(new ItemDTO(code,name,item.getItmPrice(),item.getItmQTY()));
+            if (isSaved){
+                System.out.println("Item Update");
+                resp.setStatus(HttpServletResponse.SC_CREATED);
+            }else{
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } catch (SQLException throwables) {
+            System.out.println("Sql error");
+            throwables.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class error");
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

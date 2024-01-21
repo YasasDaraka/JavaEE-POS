@@ -32,7 +32,7 @@ public class ItemBOImpl implements ItemBO {
 
     @Override
     public boolean updateItem(ItemDTO dto) throws SQLException, ClassNotFoundException {
-        return false;
+        return itemDAO.update(dto.toEntity());
     }
 
     @Override
