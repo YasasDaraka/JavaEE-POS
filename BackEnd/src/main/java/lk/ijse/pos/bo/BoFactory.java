@@ -1,6 +1,7 @@
 package lk.ijse.pos.bo;
 
 import lk.ijse.pos.bo.custom.impl.CustomerBOImpl;
+import lk.ijse.pos.bo.custom.impl.ItemBOImpl;
 
 public class BoFactory {
     private static BoFactory boFactory;
@@ -21,6 +22,8 @@ public class BoFactory {
         switch (boTypes) {
             case CUSTOMER:
                 return (T) new CustomerBOImpl();
+            case ITEM:
+                return (T) new ItemBOImpl();
             default:
                 return null;
         }
