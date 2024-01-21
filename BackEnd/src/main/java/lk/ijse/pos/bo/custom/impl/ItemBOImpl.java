@@ -13,7 +13,7 @@ public class ItemBOImpl implements ItemBO {
     ItemDAO itemDAO = DAOFactory.getDAOFactory().getDAO(DAOFactory.DAOTypes.ITEM);
     @Override
     public boolean saveItem(ItemDTO dto) throws SQLException, ClassNotFoundException {
-        return false;
+        return itemDAO.save(dto.toEntity());
     }
 
     @Override

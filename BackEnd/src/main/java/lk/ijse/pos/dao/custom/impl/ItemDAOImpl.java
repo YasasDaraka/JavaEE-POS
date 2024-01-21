@@ -2,7 +2,6 @@ package lk.ijse.pos.dao.custom.impl;
 
 import lk.ijse.pos.dao.custom.ItemDAO;
 import lk.ijse.pos.dao.custom.impl.util.SQLUtil;
-import lk.ijse.pos.entity.Customer;
 import lk.ijse.pos.entity.Item;
 
 import java.sql.SQLException;
@@ -13,7 +12,8 @@ public class ItemDAOImpl<T,ID> implements ItemDAO<Item,String> {
 
     @Override
     public boolean save(Item dto) throws SQLException, ClassNotFoundException {
-        return false;
+        return SQLUtil.execute("INSERT INTO item(itmCode, itmName, itmPrice,itmQTY) " +
+                "VALUES(?, ?, ?, ?)",rs->null,dto.getItmCode(),dto.getItmName(),dto.getItmPrice(),dto.getItmQTY());
     }
 
     @Override

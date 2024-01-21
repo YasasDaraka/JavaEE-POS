@@ -69,4 +69,42 @@ public class ItemServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Jsonb jsonb = JsonbBuilder.create();
+        ItemDTO item = jsonb.fromJson(req.getReader(), ItemDTO.class);
+        String code = item.getItmCode();
+        String name = item.getItmName();
+        String price = String.valueOf(item.getItmPrice());
+        String qty = String.valueOf(item.getItmQTY());
+        System.out.println(code+name+price+qty);
+        if(code==null || !code.matches("I00-(0*[1-9]\\d{0,2})")){
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemCode is empty or invalid");
+            return;
+        } else if (name == null || !name.matches("[A-Za-z ]{5,}")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemName is empty or invalid");
+            return;
+        } else if ( !price.matches("[1-9]\\d*(\\.\\d+)?")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Price is empty or invalid");
+            return;
+        }
+        else if (!qty.matches("[1-9]\\d*")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemQTY is empty or invalid");
+            return;
+        }
+        try {
+            boolean isSaved = itemBO.saveItem(new ItemDTO(code,name,item.getItmPrice(),item.getItmQTY()));
+            if (isSaved){
+                System.out.println("Item added");
+                resp.setStatus(HttpServletResponse.SC_CREATED);
+            }
+        } catch (SQLException throwables) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            e.printStackTrace();
+        }
+    }
+
 }
