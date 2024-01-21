@@ -4,7 +4,6 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import lk.ijse.pos.bo.BoFactory;
 import lk.ijse.pos.bo.custom.ItemBO;
-import lk.ijse.pos.dto.CustomerDTO;
 import lk.ijse.pos.dto.ItemDTO;
 
 import javax.servlet.ServletException;
@@ -105,6 +104,31 @@ public class ItemServlet extends HttpServlet {
         } catch (ClassNotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             e.printStackTrace();
+        }
+    }
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String code = req.getParameter("itmCode");
+        if(code==null || !code.matches("I00-(0*[1-9]\\d{0,2})")){
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemCode is empty or invalid");
+            return;
+        }
+        try {
+            boolean isDeleted = itemBO.deleteItem(code);
+            if (isDeleted){
+                System.out.println("Item Deleted");
+                resp.setStatus(HttpServletResponse.SC_OK);
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } catch (SQLException throwable) {
+            System.out.println("Sql error");
+            throwable.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class error");
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
     @Override

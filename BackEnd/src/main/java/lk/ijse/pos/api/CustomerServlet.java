@@ -119,7 +119,7 @@ public class CustomerServlet extends HttpServlet {
                 System.out.println("Customer Deleted");
                 resp.setStatus(HttpServletResponse.SC_OK);
             }else {
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
         } catch (SQLException throwables) {
             System.out.println("Sql error");
