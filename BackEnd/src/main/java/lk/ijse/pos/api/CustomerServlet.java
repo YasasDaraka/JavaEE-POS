@@ -116,18 +116,16 @@ public class CustomerServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
-
-
-    /*@Override
+    
+    @Override
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         System.out.println("put invoke");
         Jsonb jsonb = JsonbBuilder.create();
-        Customer customer = jsonb.fromJson(req.getReader(), Customer.class);
+        CustomerDTO customer = jsonb.fromJson(req.getReader(), CustomerDTO.class);
         String id = customer.getId();
         String name = customer.getName();
         String address = customer.getAddress();
-        double salary = customer.getSalary();
-        System.out.println(id+name+address+salary);
+
         if(id==null || !id.matches("C00-(0*[1-9]\\d{0,2})")){
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID is empty or invalid");
             return;
@@ -137,21 +135,9 @@ public class CustomerServlet extends HttpServlet {
         } else if (address == null || address.length() < 3) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Address is empty or invalid");
             return;
-        }else if (salary == 0 ) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Salary is empty or invalid");
-            return;
         }
         try {
-            Connection con = DBConnection.getInstance().getConnection();
-            String sql = "UPDATE customer SET cusName = ?, cusAddress = ?, cusSalary = ? WHERE cusId = ?";
-            PreparedStatement pstm = con.prepareStatement(sql);
-            pstm.setString(1, name);
-            pstm.setString(2, address);
-            pstm.setDouble(3, salary);
-            pstm.setString(4, id);
-
-            boolean isSaved = pstm.executeUpdate() > 0;
-
+            boolean isSaved = customerBO.updateCustomer(new CustomerDTO(id,name,address));
             if (isSaved){
                 System.out.println("Customer Update");
                 resp.setStatus(HttpServletResponse.SC_CREATED);
@@ -167,5 +153,5 @@ public class CustomerServlet extends HttpServlet {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-    }*/
+    }
 }
