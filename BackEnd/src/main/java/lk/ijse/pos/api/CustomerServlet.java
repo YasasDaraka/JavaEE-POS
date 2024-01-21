@@ -91,20 +91,16 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
-   /* @Override
+    @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Connection con = null;
         String cusID = req.getParameter("cusId");
         if(cusID==null || !cusID.matches("C00-(0*[1-9]\\d{0,2})")){
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID is empty or invalid");
             return;
         }
         try {
-            con = DBConnection.getInstance().getConnection();
-            String sql = "DELETE FROM customer WHERE cusId = ?";
-            PreparedStatement pstm = con.prepareStatement(sql);
-            pstm.setString(1, cusID);
-            if (pstm.executeUpdate() > 0){
+            boolean isDeleted = customerBO.deleteCustomer(cusID);
+            if (isDeleted){
                 System.out.println("Customer Deleted");
                 resp.setStatus(HttpServletResponse.SC_OK);
             }else {
@@ -118,12 +114,11 @@ public class CustomerServlet extends HttpServlet {
             System.out.println("Class error");
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
         }
     }
 
 
-    @Override
+    /*@Override
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         System.out.println("put invoke");
         Jsonb jsonb = JsonbBuilder.create();
