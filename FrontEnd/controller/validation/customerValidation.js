@@ -11,10 +11,10 @@ function clearCustomerInputFields() {
     $("#customerID,#customerName,#customerAddress").val("");
     $("#customerID,#customerName,#customerAddress").css("border", "1px solid #ced4da");
     $("#customerID").focus();
-    //setBtn();
+    setBtn();
 }
 
-//setBtn();
+setBtn();
 function setClBtn(){
     var any = false;
     $("#customerID, #customerName, #customerAddress").each(function () {
@@ -40,7 +40,7 @@ function events(e) {
 
     checkValidations(c_vArray[indexNo]);
 
-   // setBtn();
+    setBtn();
 
     if (e.key == "Enter") {
 
@@ -56,7 +56,7 @@ function events(e) {
     }
 }
 
-$("#customerName,#customerAddress,#customerSalary").on("keydown keyup", function (e) {
+$("#customerName,#customerAddress").on("keydown keyup", function (e) {
     events(e);
 });
 
@@ -107,7 +107,7 @@ function checkAll() {
     return true;
 }
 
-/*function setBtn() {
+function setBtn() {
     setClBtn();
     $("#cusSave").prop("disabled", true);
     $("#cusDelete").prop("disabled", true);
@@ -120,12 +120,23 @@ function checkAll() {
         $("#cusSearch").prop("disabled", true);
     }
     validCustomer(id)
-        .then(function () {
-            $("#cusDelete").prop("disabled", false);
-            if (checkAll()) {
-                $("#cusUpdate").prop("disabled", false);
-            } else {
+        .then(function (isValid) {
+            if (isValid) {
+                $("#cusDelete").prop("disabled", false);
+                if (checkAll()) {
+                    $("#cusUpdate").prop("disabled", false);
+                    $("#cusDelete").prop("disabled", false);
+                } else {
+                    $("#cusUpdate").prop("disabled", true);
+                }
+            }else {
+                $("#cusDelete").prop("disabled", true);
                 $("#cusUpdate").prop("disabled", true);
+                if (checkAll()) {
+                    $("#cusSave").prop("disabled", false);
+                } else {
+                    $("#cusSave").prop("disabled", true);
+                }
             }
         })
         .catch(function () {
@@ -137,7 +148,7 @@ function checkAll() {
                 $("#cusSave").prop("disabled", true);
             }
         });
-}*/
+}
 
 $("#cusClear").click(function () {
     clearCustomerInputFields();

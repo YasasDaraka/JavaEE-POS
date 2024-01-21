@@ -108,7 +108,7 @@ function bindTrrEvents() {
         $("#customerAddress").prop('disabled', false);
         $("#cusUpdate").prop('disabled', false);
         $("#cusDelete").prop('disabled', false);
-        /*setBtn();*/
+        setBtn();
 
     });
 }
