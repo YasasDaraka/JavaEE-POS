@@ -44,8 +44,8 @@ function generateItemId() {
         if (itemDB.length === 0) {
             $("#itmCode").val("I00-1");
         } else {
-            console.log(itemDB[itemDB.length - 1].id);
-            var id = itemDB[itemDB.length - 1].id.split("-")[1];
+            console.log(itemDB[itemDB.length - 1].itmCode);
+            var id = itemDB[itemDB.length - 1].itmCode.split("-")[1];
             var tempId = parseInt(id, 10);
             if (!isNaN(tempId)) {
                 tempId = tempId + 1;
@@ -236,10 +236,10 @@ function getAllItem() {
             console.log(res);
             for (var r of res) {
                 let row = `<tr>
-                     <td>${r.id}</td>
-                     <td>${r.name}</td>
-                     <td>${r.price}</td>
-                     <td>${r.qty}</td>
+                     <td>${r.itmCode}</td>
+                     <td>${r.itmName}</td>
+                     <td>${r.itmPrice}</td>
+                     <td>${r.itmQTY}</td>
                     </tr>`;
 
                 $("#itemTable").append(row);
@@ -289,9 +289,9 @@ function searchItem(id) {
         dataType:"json",
         success:function (res) {
             console.log(res);
-            $("#itmName").val(res.name);
-            $("#itmPrice").val(res.price);
-            $("#itmQTY").val(res.qty);
+            $("#itmName").val(res.itmName);
+            $("#itmPrice").val(res.itmPrice);
+            $("#itmQTY").val(res.itmQTY);
             return true;
         },
         error:function (ob, textStatus, error) {
