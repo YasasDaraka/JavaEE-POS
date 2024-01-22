@@ -195,114 +195,112 @@ $("#itmClear").click(function () {
 
 
 function saveItem() {
-    let itemID = $("#itmCode").val();
 
-    if (searchItem(itemID.trim()) == undefined) {
-
-
-        let itemName = $("#itmName").val();
-        let itemQty = $("#itmQTY").val();
-        let itemPrice = $("#itmPrice").val();
-
-
-        let newItem = Object.assign({}, item);
-        newItem.id = itemID;
-        newItem.name = itemName;
-        newItem.qty = itemQty;
-        newItem.price = itemPrice;
-
-
-        itemDB.push(newItem);
-        clearItemInputFields();
-        getAllItem();
-        $("#itmCode").prop('disabled', true);
-        $("#itmName").prop('disabled', true);
-        $("#itmQTY").prop('disabled', true);
-        $("#itmPrice").prop('disabled', true);
-
-
-    } else {
-        alert("Item already exits.!");
-        clearItemInputFields();
-    }
-}
-
-function getAllItem() {
-
-    $("#itemTable").empty();
-
-    for (let i = 0; i < itemDB.length; i++) {
-        let id = itemDB[i].id;
-        let name = itemDB[i].name;
-        let qty = itemDB[i].qty;
-        let price = itemDB[i].price;
-
-        let row = `<tr>
-                     <td>${id}</td>
-                     <td>${name}</td>
-                     <td>${price}</td>
-                     <td>${qty}</td>
-                    </tr>`;
-
-        $("#itemTable").append(row);
-        $('#itemTable').css({
-            'max-height': '370px',
-            'overflow-y': 'auto',
-            'display': 'table-caption'
-        });
-        $('#itemTable>tr').css({
-            'width': '600px',
-            'display': 'flex'
-        });
-        $('#itemTable>tr>td').css({
-            'flex': '1',
-            'max-width': 'calc(100%/4*1)'
-        });
-        bindItemTrrEvents();
-    }
-}
-
-function deleteItem(id) {
-    for (let i = 0; i < itemDB.length; i++) {
-        if (itemDB[i].id == id) {
-            itemDB.splice(i, 1);
-            return true;
+    let id = $("#itmCode").val();
+    validItem(id).then(function (isValid) {
+        console.log(isValid)
+        if (!isValid) {
+            console.log(isValid)
+            var array = $("#ItmForm").serializeArray();
+            var data = {};
+            array.forEach(function (field) {
+                data[field.name] = field.value;
+            });
+            $.ajax({
+                url:"http://localhost:8080/BackEnd/item",
+                method: "POST",
+                data:JSON.stringify(data),
+                contentType:"application/json",
+                success:function (res,textStatus,jsXH) {
+                    console.log(res);
+                    alert("Item Added Successfully");
+                    getAllItem();
+                },
+                error:function (ob, textStatus, error) {
+                    alert(textStatus+" : Error Item Not Added")
+                }
+            });
+        }else {
+            alert("Item already exits.!");
+            clearItemInputFields();
         }
-    }
-    return false;
-}
-
-function searchItem(id) {
-    return itemDB.find(function (item) {
-
-        return item.id == id;
     });
 }
 
-function updateItem(id) {
-    if (searchItem(id) == undefined) {
-        alert("No such Item..please check the ID");
-    } else {
-        let consent = confirm("Do you really want to update this Item.?");
-        if (consent) {
-            let item = searchItem(id);
+function getAllItem() {
+    $("#itemTable").empty();
+    $.ajax({
+        url:"http://localhost:8080/BackEnd/item?info=getall",
+        method: "GET",
+        success:function (res) {
+            console.log(res);
+            for (var r of res) {
+                let row = `<tr>
+                     <td>${r.id}</td>
+                     <td>${r.name}</td>
+                     <td>${r.price}</td>
+                     <td>${r.qty}</td>
+                    </tr>`;
 
-
-            let itemName = $("#itmName").val();
-            let itemQty = $("#itmQTY").val();
-            let itemPrice = $("#itmPrice").val();
-
-            item.name = itemName;
-            item.qty = itemQty;
-            item.price = itemPrice;
-
-            getAllItem();
-
-            $("#itmCode").prop('disabled', true);
-            $("#itmName").prop('disabled', true);
-            $("#itmQTY").prop('disabled', true);
-            $("#itmPrice").prop('disabled', true);
+                $("#itemTable").append(row);
+                $('#itemTable').css({
+                    'max-height': '370px',
+                    'overflow-y': 'auto',
+                    'display': 'table-caption'
+                });
+                $('#itemTable>tr').css({
+                    'width': '600px',
+                    'display': 'flex'
+                });
+                $('#itemTable>tr>td').css({
+                    'flex': '1',
+                    'max-width': 'calc(100%/4*1)'
+                });
+                bindItemTrrEvents();
+            }
         }
-    }
-
+    });
 }
+function validItem(id) {
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: "http://localhost:8080/BackEnd/item?itmCode=" + id + "&info=search",
+            method: "GET",
+            dataType: "json",
+            success: function (res, textStatus, xhr) {
+                console.log(res);
+                if(xhr.status===200){
+                    resolve(true);
+                }else {
+                    resolve(false);
+                }
+            },
+            error: function (ob, textStatus, error) {
+                resolve(false);
+            }
+        });
+    });
+}
+function searchItem(id) {
+    console.log(id);
+    $.ajax({
+        url:"http://localhost:8080/BackEnd/item?itmCode="+id+"&info=search",
+        method: "GET",
+        dataType:"json",
+        success:function (res) {
+            console.log(res);
+            $("#itmName").val(res.name);
+            $("#itmPrice").val(res.price);
+            $("#itmQTY").val(res.qty);
+            return true;
+        },
+        error:function (ob, textStatus, error) {
+            return false;
+        }
+    });
+}
+$('#itmSearch').click(function(){
+    let id = $("#customerID").val();
+    searchItem(id);
+    setItemClBtn();
+});

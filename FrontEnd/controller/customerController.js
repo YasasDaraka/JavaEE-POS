@@ -86,11 +86,6 @@ $('#cusAdd').click(function(){
     setClBtn();
 });
 
-$("#cusGetAll").click(function () {
-    getAllCustomers();
-});
-
-
 function bindTrrEvents() {
     $('#customerTable>tr').click(function () {
 
@@ -297,8 +292,4 @@ $('#cusSearch').click(function(){
     let id = $("#customerID").val();
     searchCustomer(id);
     setClBtn();
-});
-
-$("#cusGetAll").click(function () {
-    getAllCustomers();
 });
