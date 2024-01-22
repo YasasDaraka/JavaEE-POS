@@ -34,7 +34,7 @@ function setItemClBtn(){
 setItemClBtn();
 function events(e) {
     setItemClBtn();
-    let indexNo = c_vArray.indexOf(c_vArray.find((c) => c.field.attr("id") == e.target.id));
+    let indexNo = item_vArray.indexOf(item_vArray.find((c) => c.field.attr("id") == e.target.id));
 
     if (e.key == "Tab") {
         e.preventDefault();
@@ -81,7 +81,7 @@ function setItemBorder(bol, ob) {
             ob.field.css("border", "2px solid red");
             let check = ob.field.attr('id');
             switch (check) {
-                case "itmCode" : ob.error.text("Item-Id is a required field: I00-000"); break
+                case "itmCode" : ob.error.text("Item-Id is a required field: I00-"); break
                 case "itmName" : ob.error.text("Item-Name is a required field: Minimum 5,Max 20,Spaces Allowed"); break
                 case "itmQty" : ob.error.text("Item-Qty is a required field: Only Numbers"); break
                 case "itmPrice" : ob.error.text("Item-Price is a required field: Pattern 100.00 or 100"); break
@@ -116,7 +116,7 @@ function setItemBtn() {
     $("#itmUpdate").prop("disabled", true);
     $("#itmSearch").prop("disabled", true);
     let id = $("#itmCode").val();
-    if ($("#itmCode").val() != "" && CUS_ID_REGEX.test($("#itmCode").val())){
+    if ($("#itmCode").val() != "" && Item_CODE_REGEX.test($("#itmCode").val())){
         $("#itmSearch").prop("disabled", false);
     }else {
         $("#itmSearch").prop("disabled", true);

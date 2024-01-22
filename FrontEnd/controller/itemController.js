@@ -86,11 +86,6 @@ $('#itmAdd').click(function(){
     setItemClBtn();
 });
 
-$("#itmGetAll").click(function () {
-    getAllItem();
-});
-
-
 function bindItemTrrEvents() {
     $('#itemTable>tr').click(function () {
 
@@ -157,7 +152,7 @@ $("#itmUpdate").click(function () {
         if (isValid) {
             let consent = confirm("Do you really want to update this Item.?");
             if (consent) {
-                var array = $("#ItmForm").serializeArray();
+                var array = $("#itmForm").serializeArray();
                 var data = {};
                 array.forEach(function (field) {
                     data[field.name] = field.value;
@@ -201,7 +196,7 @@ function saveItem() {
         console.log(isValid)
         if (!isValid) {
             console.log(isValid)
-            var array = $("#ItmForm").serializeArray();
+            var array = $("#itmForm").serializeArray();
             var data = {};
             array.forEach(function (field) {
                 data[field.name] = field.value;
@@ -289,9 +284,9 @@ function searchItem(id) {
         dataType:"json",
         success:function (res) {
             console.log(res);
-            $("#itmName").val(res.itmName);
-            $("#itmPrice").val(res.itmPrice);
-            $("#itmQTY").val(res.itmQTY);
+            $("#itmName").val(res. itmName);
+            $("#itmPrice").val(res. itmPrice);
+            $("#itmQTY").val(res. itmQTY);
             return true;
         },
         error:function (ob, textStatus, error) {
@@ -300,7 +295,7 @@ function searchItem(id) {
     });
 }
 $('#itmSearch').click(function(){
-    let id = $("#customerID").val();
+    let id = $("#itmCode").val();
     searchItem(id);
     setItemClBtn();
 });
