@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     $("#order-add-item").prop("disabled", true);
     $("#btnSubmitOrder").prop("disabled", true);
     $("#order-clear").prop("disabled", true);
@@ -12,39 +12,41 @@ $(document).ready(function() {
         'max-width': 'calc(100%/5*1)'
     })
 });
-$("#btn-order,.order-nav").click(function (){
+$("#btn-order,.order-nav").click(function () {
     setCusIds();
     setItemIds()
 });
-$("#order-clear,.order-nav").click(function (){
+$("#order-clear,.order-nav").click(function () {
     clearAll();
 });
 
 function generateOrderId() {
-
-    if (orderDB.length == 0) {
-        $("#order-id").val("OID-0001");
-    } else if (orderDB.length > 0) {
-        var id = orderDB[orderDB.length - 1].oid.split("-")[1];
-        var tempId = parseInt(id);
-        tempId = tempId + 1;
-        if (tempId <= 9) {
-            $("#order-id").val("OID-000" + tempId);
-        } else if (tempId <= 99) {
-            $("#order-id").val("OID-00" + tempId);
-        } else if (tempId <= 999) {
-            $("#order-id").val("OID-0" + tempId);
-        } else if (tempId <= 9999) {
-            $("#order-id").val("OID-" + tempId);
+    loadOrderAr().then(function (orderDB) {
+        if (orderDB.length === 0) {
+            $("#customerID").val("OID-1");
+        } else {
+            console.log(orderDB[orderDB.length - 1].oid);
+            var id = orderDB[orderDB.length - 1].oid.split("-")[1];
+            var tempId = parseInt(id, 10);
+            if (!isNaN(tempId)) {
+                tempId = tempId + 1;
+                $("#customerID").val("OID-" + tempId);
+            } else {
+                console.error("Error converting order ID to a number");
+            }
         }
-    }
+    }).catch(function (error) {
+        console.error("Error loading order data:", error);
+    });
 }
+
 function searchOrder(id) {
     return orderDB.find(function (order) {
 
         return order.oid == id;
     });
 }
+
 function setCusIds() {
     $("#cId").empty();
     customerDB.forEach(function (e) {
@@ -53,6 +55,7 @@ function setCusIds() {
         $("#cId").append(select);
     });
 }
+
 $("#cId").change(function () {
     $(this).val($(this).val());
     var customer = searchCustomer($(this).val());
@@ -65,6 +68,7 @@ $("#cId").change(function () {
     setAndTriggerValue($("#cSalary"), customer.salary);
     dateCheck();
 });
+
 function setItemIds() {
     $("#icode").empty();
     itemDB.forEach(function (e) {
@@ -73,6 +77,7 @@ function setItemIds() {
         $("#icode").append(select);
     });
 }
+
 $("#icode").change(function () {
     $(this).val($(this).val());
     var item = searchItem($(this).val());
@@ -85,6 +90,7 @@ $("#icode").change(function () {
     setAndTriggerValue($("#qtyOnHand"), item.qty);
     dateCheck();
 });
+
 function placeOrder() {
     let order = {
         oid: "",
@@ -128,10 +134,10 @@ $("#order-add-item").click(function () {
     let itemExists = false;
 
     $('#order-table>tr').each(function (e) {
-       let check =$(this).children().eq(0).text();
-        if (id === check){
-           let liQty = $(this).children().eq(3).text();
-           let upQty = parseInt(liQty)+parseInt(qty);
+        let check = $(this).children().eq(0).text();
+        if (id === check) {
+            let liQty = $(this).children().eq(3).text();
+            let upQty = parseInt(liQty) + parseInt(qty);
             $(this).children().eq(1).text(name);
             $(this).children().eq(2).text(price);
             $(this).children().eq(3).text(upQty);
@@ -141,7 +147,7 @@ $("#order-add-item").click(function () {
         }
     });
 
-    if (!itemExists){
+    if (!itemExists) {
         let row = `<tr>
                      <td>${id}</td>
                      <td>${name}</td>
@@ -175,20 +181,20 @@ $("#order-add-item").click(function () {
 
     }
     $('#order-table>tr').each(function (e) {
-            let full = $(this).children().eq(4).text();
-            allTotal += parseFloat(full);
+        let full = $(this).children().eq(4).text();
+        allTotal += parseFloat(full);
     });
     $("#total").text(allTotal);
     $("#subtotal").text(allTotal);
 });
-$("#txtDiscount").on("keydown keyup input", function (e){
+$("#txtDiscount").on("keydown keyup input", function (e) {
     let total = parseFloat($("#total").text());
-    if(total>0){
+    if (total > 0) {
         let discount = $(this).val();
-        let fullAm = (total/100*discount);
+        let fullAm = (total / 100 * discount);
         total -= fullAm;
         $("#subtotal").text(total);
-        setAndTriggerValue($("#subtotal"),total );
+        setAndTriggerValue($("#subtotal"), total);
     }
 
 });
@@ -199,6 +205,7 @@ $("#txtCash").on("keydown keyup input", function () {
 $("#subtotal").on("input", function () {
     cashValidate();
 });
+
 function setBalance() {
     let subtotalText = $("#subtotal").text();
     let cashText = $("#txtCash").val();
@@ -211,19 +218,22 @@ function setBalance() {
         $("#txtBalance").val("0");
     }
 }
+
 $("#order-date").on("input", function () {
     dateCheck();
 });
+
 function dateCheck() {
     let val = $("#order-date").val();
-    if (val==""){
+    if (val == "") {
         $("#order-date").css("border", "2px solid red");
         return false
-    }else {
+    } else {
         $("#order-date").css("border", "2px solid green");
         return true;
     }
 }
+
 $("#btnSubmitOrder").click(function () {
     let oId = $("#order-id").val();
     if (itemValidate()) {
@@ -243,86 +253,85 @@ $("#btnSubmitOrder").click(function () {
         } else {
             alert("Order Already Registered");
         }
-    }else {
+    } else {
         alert("Pleace Add Items to Place Order");
     }
 });
 $("#order-id").on("keydown", function (e) {
     $("#order-table").empty();
     if (e.keyCode === 13) {
-       let id =$("#order-id").val();
-           orderDB.find(function (order) {
-               if (order.oid == id) {
-                   $("#order-table").empty();
-                   let date = order.date;
-                   let cusId = order.customerID;
-                   let orderDetails = order.orderDetails;
-                   let cusName ;
-                   let address;
-                   let salary;
-                   customerDB.find(function (customer) {
-                       if (customer.id == cusId) {
-                          cusName=customer.name;
-                          address=customer.address;
-                          salary=customer.salary;
-                       }
-                   });
+        let id = $("#order-id").val();
+        orderDB.find(function (order) {
+            if (order.oid == id) {
+                $("#order-table").empty();
+                let date = order.date;
+                let cusId = order.customerID;
+                let orderDetails = order.orderDetails;
+                let cusName;
+                let address;
+                let salary;
+                customerDB.find(function (customer) {
+                    if (customer.id == cusId) {
+                        cusName = customer.name;
+                        address = customer.address;
+                        salary = customer.salary;
+                    }
+                });
 
-                   $("#cId").val(cusId);
-                   $("#cName").val(cusName);
-                   $("#cAddress").val(address);
-                   $("#cSalary").val(salary);
-                   $("#order-date").val(date);
+                $("#cId").val(cusId);
+                $("#cName").val(cusName);
+                $("#cAddress").val(address);
+                $("#cSalary").val(salary);
+                $("#order-date").val(date);
 
-                   let code;
-                   let qty;
-                   let unitPrice;
-                   let itemName;
-                   orderDetails.forEach(function (detail) {
-                       console.log(detail.oid, detail.code, detail.qty, detail.unitPrice);
-                       code=detail.code;
-                       qty=detail.qty;
-                       unitPrice=detail.unitPrice;
-                       itemDB.find(function (item) {
-                           if (item.id == code) {
-                               itemName=item.name;
-                           }
-                       });
-                       let total = parseFloat(unitPrice) * parseFloat(qty);
-                       let row = `<tr>
+                let code;
+                let qty;
+                let unitPrice;
+                let itemName;
+                orderDetails.forEach(function (detail) {
+                    console.log(detail.oid, detail.code, detail.qty, detail.unitPrice);
+                    code = detail.code;
+                    qty = detail.qty;
+                    unitPrice = detail.unitPrice;
+                    itemDB.find(function (item) {
+                        if (item.id == code) {
+                            itemName = item.name;
+                        }
+                    });
+                    let total = parseFloat(unitPrice) * parseFloat(qty);
+                    let row = `<tr>
                      <td>${code}</td>
                      <td>${itemName}</td>
                      <td>${unitPrice}</td>
                      <td>${qty}</td>
                      <td>${total}</td>
                     </tr>`;
-                       $("#order-table").append(row);
-                       $('#order-table').css({
-                           'width ': '101.8%',
-                           'max-height': '80px',
-                           'overflow-y': 'auto',
-                           'display': 'table-caption'
-                       });
-                       $('#order-table>tr>td').css({
-                           'flex': '1',
-                           'max-width': 'calc(100%/5*1)'
-                       });
-                       if ($("#order-table>tr").length > 1) {
-                           $('#order-table>tr').css({
-                               'width': '100%',
-                               'display': 'flex'
-                           });
-                       } else {
-                           $('#order-table>tr').css({
-                               'width': '925px',
-                               'display': 'flex'
-                           });
-                       }
-                   });
-               }
-               else {
-                   alert("Order not Registered");
-               }
-           });
+                    $("#order-table").append(row);
+                    $('#order-table').css({
+                        'width ': '101.8%',
+                        'max-height': '80px',
+                        'overflow-y': 'auto',
+                        'display': 'table-caption'
+                    });
+                    $('#order-table>tr>td').css({
+                        'flex': '1',
+                        'max-width': 'calc(100%/5*1)'
+                    });
+                    if ($("#order-table>tr").length > 1) {
+                        $('#order-table>tr').css({
+                            'width': '100%',
+                            'display': 'flex'
+                        });
+                    } else {
+                        $('#order-table>tr').css({
+                            'width': '925px',
+                            'display': 'flex'
+                        });
+                    }
+                });
+            } else {
+                alert("Order not Registered");
+            }
+        });
     }
 });
