@@ -40,26 +40,41 @@ $(document).ready(function(){
     });
 });
 function generateItemId() {
-
-    if (itemDB.length == 0) {
-        $("#itmCode").val("I00-0001");
-    } else if (itemDB.length > 0) {
-        var id = itemDB[itemDB.length - 1].id.split("-")[1];
-        var tempId = parseInt(id);
-        tempId = tempId + 1;
-        if (tempId <= 9) {
-            $("#itmCode").val("I00-000" + tempId);
-        } else if (tempId <= 99) {
-            $("#itmCode").val("I00-00" + tempId);
-        } else if (tempId <= 999) {
-            $("#itmCode").val("I00-0" + tempId);
-        } else if (tempId <= 9999) {
-            $("#itmCode").val("I00-" + tempId);
+    loadItemAr().then(function (itemDB) {
+        if (itemDB.length === 0) {
+            $("#itmCode").val("I00-1");
+        } else {
+            console.log(itemDB[itemDB.length - 1].id);
+            var id = itemDB[itemDB.length - 1].id.split("-")[1];
+            var tempId = parseInt(id, 10);
+            if (!isNaN(tempId)) {
+                tempId = tempId + 1;
+                $("#itmCode").val("I00-" + tempId);
+            } else {
+                console.error("Error converting Item Code to a number");
+            }
         }
-    }
+    }).catch(function (error) {
+        console.error("Error loading Item data:", error);
+    });
 }
-
-
+function loadItemAr(){
+    return new Promise(function (resolve, reject) {
+        var ar;
+        $.ajax({
+            url: "http://localhost:8080/BackEnd/item?info=getall",
+            method: "GET",
+            success: function (res) {
+                console.log(res);
+                ar = res;
+                resolve(ar);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
 $('#itmAdd').click(function(){
     $("#itmCode").prop('disabled', false);
     $("#itmName").prop('disabled', false);
@@ -95,26 +110,39 @@ function bindItemTrrEvents() {
         $("#itmQTY").prop('disabled', false);
         $("#itmPrice").prop('disabled', false);
         $("#itmUpdate").prop('disabled', false);
-
+        $("#itmDelete").prop('disabled', false);
         setItemBtn();
 
     });
 }
 
 $("#itmDelete").click(function () {
+
     let id = $("#itmCode").val();
 
-    let consent = confirm("Do you want to delete.?");
-    if (consent) {
-        let response = deleteItem(id);
-        if (response) {
-            alert("Item Deleted");
+    validItem(id).then(function (isValid) {
+        if (isValid == false) {
+            alert("No such Item..please check the Code");
             clearItemInputFields();
-            getAllItem();
         } else {
-            alert("Item Not Removed..!");
+            let consent = confirm("Do you want to delete.?");
+            if (consent) {
+                $.ajax({
+                    url: "http://localhost:8080/BackEnd/item?itmCode="+id,
+                    method: "DELETE",
+                    success:function (res) {
+                        console.log(res);
+                        alert("Item Delete Successfully");
+                        clearItemInputFields();
+                        getAllItem();
+                    },
+                    error:function (ob, textStatus, error) {
+                        alert(textStatus+" : Error Item Not Delete")
+                    }
+                });
+            }
         }
-    }
+    });
     $("#itmCode").prop('disabled', true);
     $("#itmName").prop('disabled', true);
     $("#itmQTY").prop('disabled', true);
@@ -123,9 +151,42 @@ $("#itmDelete").click(function () {
 });
 
 $("#itmUpdate").click(function () {
+
     let id = $("#itmCode").val();
-    updateItem(id);
-    clearItemInputFields();
+    validItem(id).then(function (isValid){
+        if (isValid) {
+            let consent = confirm("Do you really want to update this Item.?");
+            if (consent) {
+                var array = $("#ItmForm").serializeArray();
+                var data = {};
+                array.forEach(function (field) {
+                    data[field.name] = field.value;
+                });
+                console.log(data)
+                $.ajax({
+                    url: "http://localhost:8080/BackEnd/item",
+                    method: "PUT",
+                    data:JSON.stringify(data),
+                    contentType:"application/json",
+                    success:function (res) {
+                        console.log(res);
+                        alert("Item Update Successfully")
+                        getAllItem();
+                    },
+                    error:function (ob, textStatus, error) {
+                        alert(textStatus+" : Error Item Not Update");
+                    }
+                });
+                $("#itmCode").prop('disabled', true);
+                $("#itmName").prop('disabled', true);
+                $("#itmQTY").prop('disabled', true);
+                $("#itmPrice").prop('disabled', true);
+                clearItemInputFields();
+            }
+        } else {
+            alert("No such Item..please check the Code");
+        }
+    });
 });
 
 $("#itmClear").click(function () {

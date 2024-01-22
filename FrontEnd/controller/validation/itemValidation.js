@@ -18,16 +18,23 @@ function clearItemInputFields() {
 
 setItemBtn();
 function setItemClBtn(){
-    if ($("#itmCode,#itmName,#itmPrice,#itmQTY").val()==""){
-        $("#itmClear").prop("disabled", true);
-    }else{
+    var any = false;
+    $("#itmCode,#itmName,#itmPrice,#itmQTY").each(function () {
+        if ($(this).val().trim() !== "") {
+            any= true;
+            return false;
+        }
+    });
+    if (any) {
         $("#itmClear").prop("disabled", false);
+    } else {
+        $("#itmClear").prop("disabled", true);
     }
 }
-$("#itmCode,#itmName,#itmPrice,#itmQTY").on("keydown keyup", function (e) {
-
+setItemClBtn();
+function events(e) {
     setItemClBtn();
-    let indexNo = item_vArray.indexOf(item_vArray.find((c) => c.field.attr("id") == e.target.id));
+    let indexNo = c_vArray.indexOf(c_vArray.find((c) => c.field.attr("id") == e.target.id));
 
     if (e.key == "Tab") {
         e.preventDefault();
@@ -49,8 +56,15 @@ $("#itmCode,#itmName,#itmPrice,#itmQTY").on("keydown keyup", function (e) {
             }
         }
     }
+}
+$("#itmName,#itmPrice,#itmQTY").on("keydown keyup", function (e) {
+    events(e);
 });
 
+$("#itmCode").on("keydown keyup", function (e) {
+    events(e);
+    searchItem($("#customerID").val());
+});
 
 function checkItemValidations(object) {
     if (object.regEx.test(object.field.val())) {
@@ -98,24 +112,42 @@ function checkAllItem() {
 function setItemBtn() {
     setItemClBtn();
     $("#itmSave").prop("disabled", true);
+    $("#itmDelete").prop("disabled", true);
     $("#itmUpdate").prop("disabled", true);
+    $("#itmSearch").prop("disabled", true);
     let id = $("#itmCode").val();
-
-    if (searchItem(id) == undefined) {
-        $("#itmDelete").prop("disabled", true);
-        $("#itmUpdate").prop("disabled", true);
-        if (checkAllItem()) {
-            $("#itmSave").prop("disabled", false);
-        } else {
-            $("#itmSave").prop("disabled", true);
-        }
-    }else{
-        $("#itmDelete").prop("disabled", false);
-        if (checkAllItem()) {
-            $("#itmUpdate").prop("disabled", false);
-        } else {
-            $("#itmUpdate").prop("disabled", true);
-        }
+    if ($("#itmCode").val() != "" && CUS_ID_REGEX.test($("#itmCode").val())){
+        $("#itmSearch").prop("disabled", false);
+    }else {
+        $("#itmSearch").prop("disabled", true);
     }
-
+    validItem(id)
+        .then(function (isValid) {
+            if (isValid) {
+                $("#itmDelete").prop("disabled", false);
+                if (checkAllItem()) {
+                    $("#itmUpdate").prop("disabled", false);
+                    $("#itmDelete").prop("disabled", false);
+                } else {
+                    $("#itmUpdate").prop("disabled", true);
+                }
+            }else {
+                $("#itmDelete").prop("disabled", true);
+                $("#itmUpdate").prop("disabled", true);
+                if (checkAllItem()) {
+                    $("#itmSave").prop("disabled", false);
+                } else {
+                    $("#itmSave").prop("disabled", true);
+                }
+            }
+        })
+        .catch(function () {
+            $("#itmDelete").prop("disabled", true);
+            $("#itmUpdate").prop("disabled", true);
+            if (checkAllItem()) {
+                $("#itmSave").prop("disabled", false);
+            } else {
+                $("#itmSave").prop("disabled", true);
+            }
+        });
 }
