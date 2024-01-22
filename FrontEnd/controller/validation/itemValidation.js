@@ -63,7 +63,7 @@ $("#itmName,#itmPrice,#itmQTY").on("keydown keyup", function (e) {
 
 $("#itmCode").on("keydown keyup", function (e) {
     events(e);
-    searchItem($("#customerID").val());
+    searchItem($("#itmCode").val());
 });
 
 function checkItemValidations(object) {
