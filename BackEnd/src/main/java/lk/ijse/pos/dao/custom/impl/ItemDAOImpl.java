@@ -47,7 +47,11 @@ public class ItemDAOImpl<T,ID> implements ItemDAO<Item,String> {
     public ArrayList<Item> getAll() throws SQLException, ClassNotFoundException {
         ArrayList<Item> itemAr = new ArrayList<>();
         try {
-            List<Item> result = new SQLUtil().execute("SELECT * FROM item", resultSet -> {
+            List<Item> result = new SQLUtil().execute("SELECT *\n" +
+                    "FROM item\n" +
+                    "ORDER BY\n" +
+                    "  CAST(SUBSTRING(itmCode, 5) AS SIGNED),\n" +
+                    "  SUBSTRING(itmCode, 1, 4)", resultSet -> {
                 while (resultSet.next()) {
                     Item item = new Item(resultSet.getString(1), resultSet.getString(2),
                             resultSet.getDouble(3),resultSet.getInt(4));

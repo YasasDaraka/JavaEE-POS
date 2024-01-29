@@ -47,7 +47,11 @@ public class CustomerDAOImpl implements CustomerDAO<Customer,String> {
     public ArrayList<Customer> getAll() throws SQLException, ClassNotFoundException {
         ArrayList<Customer> customerAr = new ArrayList<>();
         try {
-            List<Customer> result = new SQLUtil().execute("SELECT * FROM customer", resultSet -> {
+            List<Customer> result = new SQLUtil().execute("SELECT *\n" +
+                    "FROM customer\n" +
+                    "ORDER BY\n" +
+                    "  CAST(SUBSTRING(cusID, 5) AS SIGNED),\n" +
+                    "  SUBSTRING(cusID, 1, 4)", resultSet -> {
                 while (resultSet.next()) {
                     Customer customer = new Customer(resultSet.getString(1), resultSet.getString(2),
                             resultSet.getString(3));
