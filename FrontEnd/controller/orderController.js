@@ -91,10 +91,12 @@ $("#cId").change(function () {
 
 function setItemIds() {
     $("#icode").empty();
-    itemDB.forEach(function (e) {
-        let id = e.id;
-        let select = `<option selected>${id}</option>`;
-        $("#icode").append(select);
+    loadItemAr().then(function (cusDB){
+        cusDB.forEach(function (e) {
+            let id = e.itmCode;
+            let select = `<option selected>${id}</option>`;
+            $("#icode").append(select);
+        });
     });
 }
 
