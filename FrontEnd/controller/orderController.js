@@ -23,14 +23,14 @@ $("#order-clear,.order-nav").click(function () {
 function generateOrderId() {
     loadOrderAr().then(function (orderDB) {
         if (orderDB.length === 0) {
-            $("#customerID").val("OID-1");
+            $("#orderID").val("OID-1");
         } else {
             console.log(orderDB[orderDB.length - 1].oid);
             var id = orderDB[orderDB.length - 1].oid.split("-")[1];
             var tempId = parseInt(id, 10);
             if (!isNaN(tempId)) {
                 tempId = tempId + 1;
-                $("#customerID").val("OID-" + tempId);
+                $("#orderID").val("OID-" + tempId);
             } else {
                 console.error("Error converting order ID to a number");
             }
@@ -40,6 +40,23 @@ function generateOrderId() {
     });
 }
 
+function loadOrderAr(){
+    return new Promise(function (resolve, reject) {
+        var ar;
+        $.ajax({
+            url: "http://localhost:8080/BackEnd/order?info=getall",
+            method: "GET",
+            success: function (res) {
+                console.log(res);
+                ar = res;
+                resolve(ar);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
 function searchOrder(id) {
     return orderDB.find(function (order) {
 

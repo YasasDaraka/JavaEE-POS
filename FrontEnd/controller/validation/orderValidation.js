@@ -2,7 +2,6 @@ const QTY_REGEX = /^[1-9]\d*$/;
 let o_Array = new Array();
 o_Array.push({field: $("#cName"), regEx: CUS_NAME_REGEX });
 o_Array.push({field: $("#cAddress"), regEx: CUS_ADDRESS_REGEX});
-o_Array.push({field: $("#cSalary"), regEx: CUS_SALARY_REGEX});
 o_Array.push({field: $("#itemName"), regEx: Item_NAME_REGEX });
 o_Array.push({field: $("#price"), regEx: UNIT_PRICE_REGEX });
 o_Array.push({field: $("#qtyOnHand"), regEx: Item_QTY_REGEX});
