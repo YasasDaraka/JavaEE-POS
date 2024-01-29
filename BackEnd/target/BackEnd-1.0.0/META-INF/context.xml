@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/">
+    <Resource name="bean/MyBeanFactory" auth="Container"
+              type="javax.sql.DataSource"
+              bar="23"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/Javaee"
+              username="root"
+              password="1234"
+              maxIdle="10"
+              maxTotal="20"
+              maxWaitMillis="-1" />
+</Context>
