@@ -278,24 +278,27 @@ function validItem(id) {
 }
 function searchItem(id) {
     console.log(id);
+    return new Promise(function (resolve, reject) {
     $.ajax({
         url:"http://localhost:8080/BackEnd/item?itmCode="+id+"&info=search",
         method: "GET",
         dataType:"json",
         success:function (res) {
             console.log(res);
-            $("#itmName").val(res. itmName);
-            $("#itmPrice").val(res. itmPrice);
-            $("#itmQTY").val(res. itmQTY);
-            return true;
+            resolve(res);
         },
         error:function (ob, textStatus, error) {
-            return false;
+            resolve(error);
         }
+    });
     });
 }
 $('#itmSearch').click(function(){
     let id = $("#itmCode").val();
-    searchItem(id);
+    searchItem(id).then(function (res){
+        $("#itmName").val(res. itmName);
+        $("#itmPrice").val(res. itmPrice);
+        $("#itmQTY").val(res. itmQTY);
+    });
     setItemClBtn();
 });

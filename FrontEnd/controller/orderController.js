@@ -101,15 +101,18 @@ function setItemIds() {
 
 $("#icode").change(function () {
     $(this).val($(this).val());
-    var item = searchItem($(this).val());
-    $("#itemName").val(item.name);
-    $("#price").val(item.price);
-    $("#qtyOnHand").val(item.qty);
+    searchItem($(this).val()).then(function (item){
+        console.log(item)
+        $("#itemName").val(item.itmName);
+        $("#price").val(item.itmPrice);
+        $("#qtyOnHand").val(item.itmQTY);
 
-    setAndTriggerValue($("#itemName"), item.name);
-    setAndTriggerValue($("#price"), item.price);
-    setAndTriggerValue($("#qtyOnHand"), item.qty);
-    dateCheck();
+        setAndTriggerValue($("#itemName"), item.itmName);
+        setAndTriggerValue($("#price"), item.itmPrice);
+        setAndTriggerValue($("#qtyOnHand"), item.itmQTY);
+        dateCheck();
+    });
+
 });
 
 function placeOrder() {
