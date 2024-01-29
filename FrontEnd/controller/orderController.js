@@ -66,11 +66,14 @@ function searchOrder(id) {
 
 function setCusIds() {
     $("#cId").empty();
-    customerDB.forEach(function (e) {
-        let id = e.id;
-        let select = `<option selected>${id}</option>`;
-        $("#cId").append(select);
+    loadCusAr().then(function (cusDB){
+        cusDB.forEach(function (e) {
+            let id = e.id;
+            let select = `<option selected>${id}</option>`;
+            $("#cId").append(select);
+        });
     });
+
 }
 
 $("#cId").change(function () {

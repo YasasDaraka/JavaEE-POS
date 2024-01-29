@@ -32,7 +32,7 @@ function setItemClBtn(){
     }
 }
 setItemClBtn();
-function events(e) {
+function ItemEvents(e) {
     setItemClBtn();
     let indexNo = item_vArray.indexOf(item_vArray.find((c) => c.field.attr("id") == e.target.id));
 
@@ -58,11 +58,11 @@ function events(e) {
     }
 }
 $("#itmName,#itmPrice,#itmQTY").on("keydown keyup", function (e) {
-    events(e);
+    ItemEvents(e);
 });
 
 $("#itmCode").on("keydown keyup", function (e) {
-    events(e);
+    ItemEvents(e);
     searchItem($("#itmCode").val());
 });
 
