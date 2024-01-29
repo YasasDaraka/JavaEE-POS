@@ -62,7 +62,10 @@ $("#customerName,#customerAddress").on("keydown keyup", function (e) {
 
 $("#customerID").on("keydown keyup", function (e) {
     events(e);
-    searchCustomer($("#customerID").val());
+    searchCustomer($("#customerID").val()).then(function (res){
+        $("#customerName").val(res.name);
+        $("#customerAddress").val(res.address);
+    });
 });
 
 function checkValidations(object) {

@@ -78,15 +78,14 @@ function setCusIds() {
 
 $("#cId").change(function () {
     $(this).val($(this).val());
-    var customer = searchCustomer($(this).val());
-    $("#cName").val(customer.name);
-    $("#cAddress").val(customer.address);
-    $("#cSalary").val(customer.salary);
+    searchCustomer($(this).val()).then(function (customer){
+        $("#cName").val(customer.name);
+        $("#cAddress").val(customer.address);
 
-    setAndTriggerValue($("#cName"), customer.name);
-    setAndTriggerValue($("#cAddress"), customer.address);
-    setAndTriggerValue($("#cSalary"), customer.salary);
-    dateCheck();
+        setAndTriggerValue($("#cName"), customer.name);
+        setAndTriggerValue($("#cAddress"), customer.address);
+        dateCheck();
+    });
 });
 
 function setItemIds() {

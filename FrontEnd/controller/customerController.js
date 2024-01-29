@@ -272,24 +272,26 @@ function validCustomer(id) {
 }
 function searchCustomer(id) {
     console.log(id);
+    return new Promise(function (resolve, reject) {
     $.ajax({
         url:"http://localhost:8080/BackEnd/customer?cusId="+id+"&info=search",
         method: "GET",
         dataType:"json",
         success:function (res) {
             console.log(res);
-            /*$("#customerID").val(res.id);*/
-            $("#customerName").val(res.name);
-            $("#customerAddress").val(res.address);
-            return true;
+            resolve(res);
         },
         error:function (ob, textStatus, error) {
-            return false;
+            resolve(error);
         }
+    });
     });
 }
 $('#cusSearch').click(function(){
     let id = $("#customerID").val();
-    searchCustomer(id);
+    searchCustomer(id).then(function (res){
+        $("#customerName").val(res.name);
+        $("#customerAddress").val(res.address);
+    });
     setClBtn();
 });
