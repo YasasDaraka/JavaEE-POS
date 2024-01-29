@@ -11,7 +11,7 @@ public class CustomerDAOImpl implements CustomerDAO<Customer,String> {
 
     @Override
     public boolean save(Customer dto) throws SQLException, ClassNotFoundException {
-        return SQLUtil.execute("INSERT INTO customer(cusID, cusName, cusAddress) " +
+        return new SQLUtil().execute("INSERT INTO customer(cusID, cusName, cusAddress) " +
                 "VALUES(?, ?, ?)",rs->null,dto.getCusID(),dto.getCusName(),dto.getCusAddress());
     }
 
@@ -19,7 +19,8 @@ public class CustomerDAOImpl implements CustomerDAO<Customer,String> {
     public Customer search(String id) throws SQLException, ClassNotFoundException {
         Customer cus = null;
         try {
-             cus = SQLUtil.execute("SELECT * FROM customer WHERE cusId = ?", resultSet -> {
+
+             cus = new SQLUtil().execute("SELECT * FROM customer WHERE cusId = ?", resultSet -> {
                 while (resultSet.next()) {
                     return new Customer(resultSet.getString(1), resultSet.getString(2),
                             resultSet.getString(3));
@@ -33,12 +34,12 @@ public class CustomerDAOImpl implements CustomerDAO<Customer,String> {
 
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
-        return SQLUtil.execute("DELETE FROM customer WHERE cusID = ?",rs->null,id);
+        return new SQLUtil().execute("DELETE FROM customer WHERE cusID = ?",rs->null,id);
     }
 
     @Override
     public boolean update(Customer dto) throws SQLException, ClassNotFoundException {
-        return SQLUtil.execute("UPDATE customer SET cusName = ?, cusAddress = ? WHERE cusID = ?",
+        return new SQLUtil().execute("UPDATE customer SET cusName = ?, cusAddress = ? WHERE cusID = ?",
                 rs->null,dto.getCusName(),dto.getCusAddress(),dto.getCusID());
     }
 
@@ -46,7 +47,7 @@ public class CustomerDAOImpl implements CustomerDAO<Customer,String> {
     public ArrayList<Customer> getAll() throws SQLException, ClassNotFoundException {
         ArrayList<Customer> customerAr = new ArrayList<>();
         try {
-            List<Customer> result = SQLUtil.execute("SELECT * FROM customer", resultSet -> {
+            List<Customer> result = new SQLUtil().execute("SELECT * FROM customer", resultSet -> {
                 while (resultSet.next()) {
                     Customer customer = new Customer(resultSet.getString(1), resultSet.getString(2),
                             resultSet.getString(3));

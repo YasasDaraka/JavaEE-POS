@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SQLUtil {
-    public static <T>T execute(String sql, ResultSetHandler<T> handler, Object... args) throws SQLException, ClassNotFoundException {
+    public <T>T execute(String sql, ResultSetHandler<T> handler, Object... args) throws SQLException, ClassNotFoundException {
         try (Connection connection = ContextListener.pool.getConnection();
              PreparedStatement pstm = connection.prepareStatement(sql)) {
 

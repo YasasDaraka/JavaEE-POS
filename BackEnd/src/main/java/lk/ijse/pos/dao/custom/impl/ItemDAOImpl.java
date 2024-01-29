@@ -12,7 +12,7 @@ public class ItemDAOImpl<T,ID> implements ItemDAO<Item,String> {
 
     @Override
     public boolean save(Item dto) throws SQLException, ClassNotFoundException {
-        return SQLUtil.execute("INSERT INTO item(itmCode, itmName, itmPrice,itmQTY) " +
+        return new SQLUtil().execute("INSERT INTO item(itmCode, itmName, itmPrice,itmQTY) " +
                 "VALUES(?, ?, ?, ?)",rs->null,dto.getItmCode(),dto.getItmName(),dto.getItmPrice(),dto.getItmQTY());
     }
 
@@ -20,7 +20,7 @@ public class ItemDAOImpl<T,ID> implements ItemDAO<Item,String> {
     public Item search(String id) throws SQLException, ClassNotFoundException {
         Item itm = null;
         try {
-            itm = SQLUtil.execute("SELECT * FROM item WHERE itmCode = ?", resultSet -> {
+            itm = new SQLUtil().execute("SELECT * FROM item WHERE itmCode = ?", resultSet -> {
                 while (resultSet.next()) {
                     return new Item(resultSet.getString(1), resultSet.getString(2),
                             resultSet.getDouble(3),resultSet.getInt(4));
@@ -34,12 +34,12 @@ public class ItemDAOImpl<T,ID> implements ItemDAO<Item,String> {
 
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
-        return SQLUtil.execute("DELETE FROM item WHERE itmCode = ?",rs->null,id);
+        return new SQLUtil().execute("DELETE FROM item WHERE itmCode = ?",rs->null,id);
     }
 
     @Override
     public boolean update(Item dto) throws SQLException, ClassNotFoundException {
-        return SQLUtil.execute("UPDATE item SET itmName = ?, itmPrice = ?,itmQTY = ? WHERE itmCode = ?",
+        return new SQLUtil().execute("UPDATE item SET itmName = ?, itmPrice = ?,itmQTY = ? WHERE itmCode = ?",
                 rs->null,dto.getItmName(),dto.getItmPrice(),dto.getItmQTY(),dto.getItmCode());
     }
 
@@ -47,7 +47,7 @@ public class ItemDAOImpl<T,ID> implements ItemDAO<Item,String> {
     public ArrayList<Item> getAll() throws SQLException, ClassNotFoundException {
         ArrayList<Item> itemAr = new ArrayList<>();
         try {
-            List<Item> result = SQLUtil.execute("SELECT * FROM item", resultSet -> {
+            List<Item> result = new SQLUtil().execute("SELECT * FROM item", resultSet -> {
                 while (resultSet.next()) {
                     Item item = new Item(resultSet.getString(1), resultSet.getString(2),
                             resultSet.getDouble(3),resultSet.getInt(4));

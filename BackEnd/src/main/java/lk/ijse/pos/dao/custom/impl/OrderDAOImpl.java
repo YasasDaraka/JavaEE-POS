@@ -33,7 +33,7 @@ public class OrderDAOImpl<T,ID> implements OrderDAO<Order,String> {
     public ArrayList<Order> getAll() throws SQLException, ClassNotFoundException {
         ArrayList<Order> orders = new ArrayList<>();
         try {
-            List<Order> result = SQLUtil.execute("SELECT * FROM orders", resultSet -> {
+            List<Order> result = new SQLUtil().execute("SELECT * FROM orders", resultSet -> {
                 while (resultSet.next()) {
                     Order order = new Order(resultSet.getString(1), resultSet.getDate(2),
                             resultSet.getString(3));

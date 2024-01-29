@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 @WebListener
 public class ContextListener implements ServletContextListener {
     public static DataSource pool;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
