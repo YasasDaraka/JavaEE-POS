@@ -4,8 +4,8 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import lk.ijse.pos.bo.BoFactory;
 import lk.ijse.pos.bo.custom.OrderBO;
-import lk.ijse.pos.dto.CustomerDTO;
 import lk.ijse.pos.dto.OrderDTO;
+import lk.ijse.pos.dto.OrderDetailsDTO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet(value = "/order")
 public class OrderServlet extends HttpServlet {
@@ -60,6 +61,7 @@ public class OrderServlet extends HttpServlet {
             ArrayList<OrderDTO> orderDto = orderBO.getAllOrder();
 
             if (orderDto != null) {
+                System.out.println(orderDto+" getall");
                 jsonb.toJson(orderDto, resp.getWriter());
                 resp.setStatus(HttpServletResponse.SC_OK);
             } else {
@@ -77,37 +79,29 @@ public class OrderServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         System.out.println("post method log");
-
-        try {
             Jsonb jsonb = JsonbBuilder.create();
             OrderDTO orderDTO = jsonb.fromJson(req.getReader(), OrderDTO.class);
-            System.out.println(orderDTO);
-            if (orderDTO == null){
-                System.out.println("null");
-            }
-            else {System.out.println("not null");}
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String orderId = orderDTO.getOid();
+        String cusId = orderDTO.getCusID();
+        List<OrderDetailsDTO> dto = orderDTO.getOrderDetails();
 
-
-
-        /*if(id==null || !id.matches("C00-(0*[1-9]\\d{0,2})")){
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID is empty or invalid");
+        if(orderId==null || !orderId.matches("OID-(0*[1-9]\\d{0,2})")){
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Order ID is empty or invalid");
+            System.out.println("invalid order id");
             return;
-        } else if (name == null || !name.matches("[A-Za-z ]{5,}")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Name is empty or invalid");
-            return;
-        } else if (address == null || address.length() < 3) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Address is empty or invalid");
+        } else if (cusId == null || !cusId.matches("C00-(0*[1-9]\\d{0,2})")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Customer ID is empty or invalid");
+            System.out.println("invalid cusid id");
             return;
         }
-        System.out.println(customer);
         try {
-            boolean isSaved = customerBO.saveCustomer(new CustomerDTO(id,name,address));
+            System.out.println("try catch");
+            boolean isSaved = orderBO.saveOrder(orderDTO);
             if (isSaved){
-                System.out.println("Customer added");
+                System.out.println("Order added");
                 resp.setStatus(HttpServletResponse.SC_CREATED);
+            }else {
+                System.out.println("Order not added");
             }
         } catch (SQLException throwables) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -115,6 +109,6 @@ public class OrderServlet extends HttpServlet {
         } catch (ClassNotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             e.printStackTrace();
-        }*/
+        }
     }
 }

@@ -2,7 +2,6 @@ package lk.ijse.pos.dao.custom.impl;
 
 import lk.ijse.pos.dao.custom.OrderDAO;
 import lk.ijse.pos.dao.custom.impl.util.SQLUtil;
-import lk.ijse.pos.entity.Customer;
 import lk.ijse.pos.entity.Order;
 
 import java.sql.SQLException;
@@ -13,7 +12,8 @@ import java.util.List;
 public class OrderDAOImpl<T,ID> implements OrderDAO<Order,String> {
     @Override
     public boolean save(Order dto) throws SQLException, ClassNotFoundException {
-        return false;
+        return new SQLUtil().execute("INSERT INTO orders(oid, date, cusID) " +
+                "VALUES(?, ?, ?)",rs->null,dto.getOid(),dto.getDate(),dto.getCusID());
     }
 
     @Override
