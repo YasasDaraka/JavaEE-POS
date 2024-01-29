@@ -4,6 +4,7 @@ import lk.ijse.pos.bo.custom.OrderBO;
 import lk.ijse.pos.dao.DAOFactory;
 import lk.ijse.pos.dao.custom.OrderDAO;
 import lk.ijse.pos.dto.OrderDTO;
+import lk.ijse.pos.entity.Customer;
 import lk.ijse.pos.entity.Order;
 
 import java.sql.SQLException;
@@ -19,6 +20,10 @@ public class OrderBOImpl implements OrderBO {
 
     @Override
     public OrderDTO searchOrder(String id) throws SQLException, ClassNotFoundException {
+        Order order = (Order) orderDAO.search(id);
+        if(order != null) {
+            return order.toDTO();
+        }
         return null;
     }
 

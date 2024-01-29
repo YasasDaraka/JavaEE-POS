@@ -58,9 +58,20 @@ function loadOrderAr(){
     });
 }
 function searchOrder(id) {
-    return orderDB.find(function (order) {
-
-        return order.oid == id;
+    console.log(id);
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url:"http://localhost:8080/BackEnd/order?oid="+id+"&info=search",
+            method: "GET",
+            dataType:"json",
+            success:function (res) {
+                console.log(res);
+                resolve(res);
+            },
+            error:function (ob, textStatus, error) {
+                resolve(error);
+            }
+        });
     });
 }
 
@@ -119,13 +130,13 @@ function placeOrder() {
     let order = {
         oid: "",
         date: "",
-        customerID: "",
+        cusID: "",
         orderDetails: []
     };
 
     let cusId = $("#cId").val();
-    let date = $("#order-date").val();
-    let OId = $("#order-id").val();
+    let date = $("#orderDate").val();
+    let OId = $("#orderID").val();
 
     $('#order-table>tr').each(function () {
         let code = $(this).children().eq(0).text();
@@ -133,19 +144,33 @@ function placeOrder() {
         let price = $(this).children().eq(2).text();
         let orderDetails = {
             oid: OId,
-            code: code,
-            qty: parseInt(qty),
-            unitPrice: parseFloat(price)
+            itmCode: code,
+            itmQTY: parseInt(qty),
+            itmPrice: parseFloat(price)
         };
 
         order.orderDetails.push(orderDetails);
-        orderDetailsDB.push(orderDetails);
     });
 
     order.oid = OId;
     order.date = date;
-    order.customerID = cusId;
-    orderDB.push(order);
+    order.cusID = cusId;
+
+            console.log(order)
+            $.ajax({
+                url:"http://localhost:8080/BackEnd/order",
+                method: "POST",
+                data:JSON.stringify(order),
+                contentType:"application/json",
+                success:function (res,textStatus,jsXH) {
+                    console.log(res);
+                    alert("Order Added Successfully");
+                   // getAllCustomers();
+                },
+                error:function (ob, textStatus, error) {
+                    alert(textStatus+" : Error Order Not Added")
+                }
+            });
 }
 
 $("#order-add-item").click(function () {
@@ -243,42 +268,45 @@ function setBalance() {
     }
 }
 
-$("#order-date").on("input", function () {
+$("#orderDate").on("input", function () {
     dateCheck();
 });
 
 function dateCheck() {
-    let val = $("#order-date").val();
+    let val = $("#orderDate").val();
     if (val == "") {
-        $("#order-date").css("border", "2px solid red");
+        $("#orderDate").css("border", "2px solid red");
         return false
     } else {
-        $("#order-date").css("border", "2px solid green");
+        $("#orderDate").css("border", "2px solid green");
         return true;
     }
 }
 
 $("#btnSubmitOrder").click(function () {
-    let oId = $("#order-id").val();
+    let oId = $("#orderID").val();
+
     if (itemValidate()) {
-        if (!searchOrder(oId)) {
-            if (cashValidate()) {
-                if (dateCheck()) {
-                    placeOrder();
-                    alert("Order Place Successfully");
-                    clearAll();
-                    generateOrderId();
+        searchOrder(oId).then(function (order) {
+            if (Object.keys(order).length === 0) {
+                if (cashValidate()) {
+                    if (dateCheck()) {
+                        placeOrder();
+                        alert("Order Place Successfully");
+                        clearAll();
+                        generateOrderId();
+                    } else {
+                        alert("Insert Date!");
+                    }
                 } else {
-                    alert("Insert Date!");
+                    alert("Insuficent Credit : Check Cash!");
                 }
             } else {
-                alert("Insuficent Credit : Check Cash!");
+                alert("Order Already Registered");
             }
-        } else {
-            alert("Order Already Registered");
-        }
+        });
     } else {
-        alert("Pleace Add Items to Place Order");
+        alert("Please Add Items to Place Order");
     }
 });
 $("#order-id").on("keydown", function (e) {

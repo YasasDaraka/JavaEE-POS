@@ -4,14 +4,15 @@ import lk.ijse.pos.dto.OrderDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Date;
+
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
     private String oid;
-    private Date date;
+    private LocalDate date;
     private String cusID;
 
     public OrderDTO toDTO(){

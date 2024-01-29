@@ -33,7 +33,7 @@ function setAddItemBtn() {
     }
 }
 $("#cName,#cAddress,#cSalary,#itemName,#price,#qtyOnHand,#orderQty").on("keydown keyup input", function (e) {
-    //setClBtn();
+
     let indexNo = o_Array.indexOf(o_Array.find((c) => c.field.attr("id") == e.target.id));
 
     checkOrderValidations(o_Array[indexNo]);
@@ -67,15 +67,17 @@ function setOrderBorder(bol, ob) {
 }
 function setOrderBtn() {
     let id = $("#order-id").val();
-    if (searchOrder(id) == undefined) {
-        if (checkAllOrder()) {
-            $("#btnSubmitOrder").prop("disabled", false);
-            $("#order-add-item").prop("disabled", false);
-        } else {
-            $("#btnSubmitOrder").prop("disabled", true);
+    searchOrder(id).then(function (order) {
+        if (Object.keys(order).length === 0) {
+            if (checkAllOrder()) {
+                $("#btnSubmitOrder").prop("disabled", false);
+                $("#order-add-item").prop("disabled", false);
+            } else {
+                $("#btnSubmitOrder").prop("disabled", true);
 
+            }
         }
-    }
+    });
 }
 function checkAllOrder() {
     for (let i = 0; i < o_Array.length; i++) {
@@ -109,6 +111,7 @@ function cashValidate() {
 $("#orderQty").on("keydown keyup input", function (e){
     let qty = parseInt($("#qtyOnHand").val());
     let orderQty = parseInt($("#orderQty").val());
+    console.log(qty,orderQty);
     if (qty>=orderQty && qty<=0){
         $("#orderQty").css("border", "2px solid green");
         $("#QtyError").text("");
@@ -140,12 +143,12 @@ function clearAll() {
     $("#order-table").empty();
 }
 $("#cName,#cSalary,#cAddress,#itemName,#price,#qtyOnHand,#orderQty,#order-date,#txtCash,#txtDiscount,#txtBalance").on("keydown keyup input", function (e){
-    var anyFieldNotEmpty = true;
+    var empty = true;
     $("#cName, #cSalary, #cAddress, #itemName, #price, #qtyOnHand, #orderQty, #order-date, #txtCash, #txtDiscount, #txtBalance").each(function() {
         if ($(this).val() !== "") {
-            anyFieldNotEmpty = false;
+            empty = false;
             return true;
         }
     });
-    $("#order-clear").prop("disabled", anyFieldNotEmpty);
+    $("#order-clear").prop("disabled", empty);
 });
