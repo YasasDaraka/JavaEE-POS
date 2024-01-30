@@ -135,16 +135,16 @@ $("#orderQty").on("keydown keyup input", function (e){
     }
 });
 function clearAll() {
-    $("#cName,#cSalary,#cAddress,#itemName,#price,#qtyOnHand,#orderQty,#order-date,#txtCash,#txtDiscount,#txtBalance").val("");
-    $("#cName,#cSalary,#cAddress,#itemName,#price,#qtyOnHand,#orderQty,#order-date,#txtCash").css("border", "1px solid #ced4da");
+    $("#cName,#cAddress,#itemName,#price,#qtyOnHand,#orderQty,#orderDate,#txtCash,#txtDiscount,#txtBalance").val("");
+    $("#cName,#cAddress,#itemName,#price,#qtyOnHand,#orderQty,#orderDate,#txtCash").css("border", "1px solid #ced4da");
     $("#total,#subtotal").text("0");
     $("#order-add-item").prop("disabled", true);
     $("#btnSubmitOrder").prop("disabled", true);
     $("#order-table").empty();
 }
-$("#cName,#cSalary,#cAddress,#itemName,#price,#qtyOnHand,#orderQty,#order-date,#txtCash,#txtDiscount,#txtBalance").on("keydown keyup input", function (e){
+$("#cName,#cAddress,#itemName,#price,#qtyOnHand,#orderQty,#orderDate,#txtCash,#txtDiscount,#txtBalance").on("keydown keyup input", function (e){
     var empty = true;
-    $("#cName, #cSalary, #cAddress, #itemName, #price, #qtyOnHand, #orderQty, #order-date, #txtCash, #txtDiscount, #txtBalance").each(function() {
+    $("#cName, #cAddress, #itemName, #price, #qtyOnHand, #orderQty, #orderDate, #txtCash, #txtDiscount, #txtBalance").each(function() {
         if ($(this).val() !== "") {
             empty = false;
             return true;
