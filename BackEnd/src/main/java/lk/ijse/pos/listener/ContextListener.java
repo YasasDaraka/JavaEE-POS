@@ -1,7 +1,5 @@
 package lk.ijse.pos.listener;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContextEvent;
