@@ -40,7 +40,7 @@ function generateOrderId() {
     });
 }
 
-function loadOrderAr(){
+function loadOrderAr() {
     return new Promise(function (resolve, reject) {
         var ar;
         $.ajax({
@@ -57,18 +57,19 @@ function loadOrderAr(){
         });
     });
 }
+
 function searchOrder(id) {
     console.log(id);
     return new Promise(function (resolve, reject) {
         $.ajax({
-            url:"http://localhost:8080/BackEnd/order?oid="+id+"&info=search",
+            url: "http://localhost:8080/BackEnd/order?oid=" + id + "&info=search",
             method: "GET",
-            dataType:"json",
-            success:function (res) {
+            dataType: "json",
+            success: function (res) {
                 console.log(res);
                 resolve(res);
             },
-            error:function (ob, textStatus, error) {
+            error: function (ob, textStatus, error) {
                 resolve(error);
             }
         });
@@ -77,7 +78,7 @@ function searchOrder(id) {
 
 function setCusIds() {
     $("#cId").empty();
-    loadCusAr().then(function (cusDB){
+    loadCusAr().then(function (cusDB) {
         cusDB.forEach(function (e) {
             let id = e.id;
             let select = `<option selected>${id}</option>`;
@@ -89,7 +90,7 @@ function setCusIds() {
 
 $("#cId").change(function () {
     $(this).val($(this).val());
-    searchCustomer($(this).val()).then(function (customer){
+    searchCustomer($(this).val()).then(function (customer) {
         $("#cName").val(customer.name);
         $("#cAddress").val(customer.address);
 
@@ -101,7 +102,7 @@ $("#cId").change(function () {
 
 function setItemIds() {
     $("#icode").empty();
-    loadItemAr().then(function (cusDB){
+    loadItemAr().then(function (cusDB) {
         cusDB.forEach(function (e) {
             let id = e.itmCode;
             let select = `<option selected>${id}</option>`;
@@ -112,7 +113,7 @@ function setItemIds() {
 
 $("#icode").change(function () {
     $(this).val($(this).val());
-    searchItem($(this).val()).then(function (item){
+    searchItem($(this).val()).then(function (item) {
         console.log(item)
         $("#itemName").val(item.itmName);
         $("#price").val(item.itmPrice);
@@ -156,20 +157,20 @@ function placeOrder() {
     order.date = date;
     order.cusID = cusId;
 
-            console.log(order)
-            $.ajax({
-                url:"http://localhost:8080/BackEnd/order",
-                method: "POST",
-                data:JSON.stringify(order),
-                contentType:"application/json",
-                success:function (res,textStatus,jsXH) {
-                    console.log(res);
-                    alert("Order Added Successfully");
-                },
-                error:function (ob, textStatus, error) {
-                    alert(textStatus+" : Error Order Not Added")
-                }
-            });
+    console.log(order)
+    $.ajax({
+        url: "http://localhost:8080/BackEnd/order",
+        method: "POST",
+        data: JSON.stringify(order),
+        contentType: "application/json",
+        success: function (res, textStatus, jsXH) {
+            console.log(res);
+            alert("Order Added Successfully");
+        },
+        error: function (ob, textStatus, error) {
+            alert(textStatus + " : Error Order Not Added")
+        }
+    });
 }
 
 $("#order-add-item").click(function () {
@@ -307,81 +308,102 @@ $("#btnSubmitOrder").click(function () {
         alert("Please Add Items to Place Order");
     }
 });
-$("#order-id").on("keydown", function (e) {
+
+function loadOrderDetailAr() {
+    return new Promise(function (resolve, reject) {
+        var ar;
+        $.ajax({
+            url: "http://localhost:8080/BackEnd/orderDetails",
+            method: "GET",
+            success: function (res) {
+                console.log(res);
+                ar = res;
+                resolve(ar);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+$("#orderID").on("keydown", async function (e) {
     $("#order-table").empty();
     if (e.keyCode === 13) {
-        let id = $("#order-id").val();
-        orderDB.find(function (order) {
-            if (order.oid == id) {
-                $("#order-table").empty();
-                let date = order.date;
-                let cusId = order.customerID;
-                let orderDetails = order.orderDetails;
-                let cusName;
-                let address;
-                let salary;
-                customerDB.find(function (customer) {
-                    if (customer.id == cusId) {
-                        cusName = customer.name;
-                        address = customer.address;
-                        salary = customer.salary;
-                    }
-                });
+        let id = $("#orderID").val();
+        let order = await searchOrder(id);
+        if (Object.keys(order).length !== 0) {
+            $("#order-table").empty();
+            let date = order.date;
+            let cusId = order.cusID;
+
+            let customer = await searchCustomer(cusId);
+
+            if (Object.keys(customer).length !== 0) {
+                let cusName = customer.name;
+                let address = customer.address;
 
                 $("#cId").val(cusId);
                 $("#cName").val(cusName);
                 $("#cAddress").val(address);
-                $("#cSalary").val(salary);
-                $("#order-date").val(date);
+                $("#orderDate").val(date);
+            }
 
-                let code;
-                let qty;
-                let unitPrice;
-                let itemName;
-                orderDetails.forEach(function (detail) {
-                    console.log(detail.oid, detail.code, detail.qty, detail.unitPrice);
-                    code = detail.code;
-                    qty = detail.qty;
-                    unitPrice = detail.unitPrice;
-                    itemDB.find(function (item) {
-                        if (item.id == code) {
-                            itemName = item.name;
-                        }
-                    });
-                    let total = parseFloat(unitPrice) * parseFloat(qty);
-                    let row = `<tr>
+            let code;
+            let qty;
+            let unitPrice;
+            let itemName;
+
+            loadOrderDetailAr().then(async function (detail) {
+                if (detail.length !== 0) {
+                    for (var info of detail) {
+                        if (info.oid == id) {
+                            console.log(info.oid, info.itmCode, info.itmQTY, info.itmPrice);
+                            code = info.itmCode;
+                            qty = info.itmQTY;
+                            unitPrice = info.itmPrice;
+                            let res = await searchItem(code);
+
+                            if (Object.keys(res).length !== 0) {
+                                itemName = res.itmName;
+                                console.log(itemName);
+                            }
+
+                            let total = parseFloat(unitPrice) * parseFloat(qty);
+                            let row = `<tr>
                      <td>${code}</td>
                      <td>${itemName}</td>
                      <td>${unitPrice}</td>
                      <td>${qty}</td>
                      <td>${total}</td>
                     </tr>`;
-                    $("#order-table").append(row);
-                    $('#order-table').css({
-                        'width ': '101.8%',
-                        'max-height': '80px',
-                        'overflow-y': 'auto',
-                        'display': 'table-caption'
-                    });
-                    $('#order-table>tr>td').css({
-                        'flex': '1',
-                        'max-width': 'calc(100%/5*1)'
-                    });
-                    if ($("#order-table>tr").length > 1) {
-                        $('#order-table>tr').css({
-                            'width': '100%',
-                            'display': 'flex'
-                        });
-                    } else {
-                        $('#order-table>tr').css({
-                            'width': '925px',
-                            'display': 'flex'
-                        });
+                            $("#order-table").append(row);
+                            $('#order-table').css({
+                                'width ': '101.8%',
+                                'max-height': '80px',
+                                'overflow-y': 'auto',
+                                'display': 'table-caption'
+                            });
+                            $('#order-table>tr>td').css({
+                                'flex': '1',
+                                'max-width': 'calc(100%/5*1)'
+                            });
+                            if ($("#order-table>tr").length > 1) {
+                                $('#order-table>tr').css({
+                                    'width': '100%',
+                                    'display': 'flex'
+                                });
+                            } else {
+                                $('#order-table>tr').css({
+                                    'width': '925px',
+                                    'display': 'flex'
+                                });
+                            }
+                        }
                     }
-                });
-            } else {
-                alert("Order not Registered");
-            }
-        });
+                }
+            });
+        }
+
     }
 });
