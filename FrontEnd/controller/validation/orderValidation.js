@@ -32,7 +32,7 @@ function setAddItemBtn() {
         $("#order-add-item").prop("disabled", true);
     }
 }
-$("#cName,#cAddress,#cSalary,#itemName,#price,#qtyOnHand,#orderQty").on("keydown keyup input", function (e) {
+$("#cName,#cAddress,#itemName,#price,#qtyOnHand,#orderQty").on("keydown keyup input", function (e) {
 
     let indexNo = o_Array.indexOf(o_Array.find((c) => c.field.attr("id") == e.target.id));
 

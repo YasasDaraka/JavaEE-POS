@@ -5,7 +5,6 @@ import lk.ijse.pos.dao.custom.impl.util.SQLUtil;
 import lk.ijse.pos.entity.Order;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class OrderDAOImpl<T,ID> implements OrderDAO<Order,String> {
 
             order = new SQLUtil().execute("SELECT * FROM orders WHERE oid = ?", resultSet -> {
                 while (resultSet.next()) {
-                    return  new Order(resultSet.getString(1), (LocalDate) resultSet.getObject(2),
+                    return  new Order(resultSet.getString(1), resultSet.getDate(2).toLocalDate(),
                             resultSet.getString(3));
                 }
                 return null;
@@ -53,7 +52,7 @@ public class OrderDAOImpl<T,ID> implements OrderDAO<Order,String> {
                     "  CAST(SUBSTRING(oid, 5) AS SIGNED),\n" +
                     "  SUBSTRING(oid, 1, 4)", resultSet -> {
                 while (resultSet.next()) {
-                    Order order = new Order(resultSet.getString(1), (LocalDate) resultSet.getObject(2),
+                    Order order = new Order(resultSet.getString(1), resultSet.getDate(2).toLocalDate(),
                             resultSet.getString(3));
                     orders.add(order);
                 }

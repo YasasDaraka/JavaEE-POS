@@ -165,7 +165,6 @@ function placeOrder() {
                 success:function (res,textStatus,jsXH) {
                     console.log(res);
                     alert("Order Added Successfully");
-                   // getAllCustomers();
                 },
                 error:function (ob, textStatus, error) {
                     alert(textStatus+" : Error Order Not Added")
@@ -292,7 +291,6 @@ $("#btnSubmitOrder").click(function () {
                 if (cashValidate()) {
                     if (dateCheck()) {
                         placeOrder();
-                        alert("Order Place Successfully");
                         clearAll();
                         generateOrderId();
                     } else {

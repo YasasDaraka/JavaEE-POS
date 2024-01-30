@@ -94,6 +94,21 @@ public class OrderServlet extends HttpServlet {
             System.out.println("invalid cusid id");
             return;
         }
+        for (OrderDetailsDTO list : dto) {
+            String code = list.getItmCode();
+            String price = String.valueOf(list.getItmPrice());
+            String qty = String.valueOf(list.getItmQTY());
+            if (code == null || !code.matches("I00-(0*[1-9]\\d{0,2})")) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemCode is empty or invalid");
+                continue;
+            } else if (!price.matches("[1-9]\\d*(\\.\\d+)?")) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Price is empty or invalid");
+                continue;
+            } else if (!qty.matches("[1-9]\\d*")) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ItemQTY is empty or invalid");
+                continue;
+            }
+        }
         try {
             System.out.println("try catch");
             boolean isSaved = orderBO.saveOrder(orderDTO);
