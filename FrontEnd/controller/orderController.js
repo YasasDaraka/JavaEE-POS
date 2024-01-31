@@ -166,6 +166,7 @@ function placeOrder() {
         success: function (res, textStatus, jsXH) {
             console.log(res);
             alert("Order Added Successfully");
+            generateOrderId();
         },
         error: function (ob, textStatus, error) {
             alert(textStatus + " : Error Order Not Added")
