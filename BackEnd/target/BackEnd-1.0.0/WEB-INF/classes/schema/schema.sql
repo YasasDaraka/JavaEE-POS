@@ -13,7 +13,7 @@ CREATE TABLE item(
                          itmQTY int(10),
                          CONSTRAINT PRIMARY KEY (itmCode)
 );
-CREATE TABLE order(
+CREATE TABLE orders(
                          oid varchar(10),
                          date date ,
                          cusID varchar(10),
@@ -26,7 +26,7 @@ CREATE TABLE orderDetails(
                          itmCode varchar(10),
                          itmQTY int(10),
                          itmPrice decimal(10,2),
-                         CONSTRAINT FOREIGN KEY (oid) REFERENCES order(oid)
+                         CONSTRAINT FOREIGN KEY (oid) REFERENCES orders(oid)
                          ON UPDATE CASCADE ON DELETE CASCADE,
                          CONSTRAINT FOREIGN KEY (itmCode) REFERENCES item(itmCode)
                          ON UPDATE CASCADE ON DELETE CASCADE

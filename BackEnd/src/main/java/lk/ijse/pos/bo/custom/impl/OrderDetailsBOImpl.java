@@ -1,13 +1,9 @@
 package lk.ijse.pos.bo.custom.impl;
-
 import lk.ijse.pos.bo.custom.OrderDetailsBO;
 import lk.ijse.pos.dao.DAOFactory;
 import lk.ijse.pos.dao.custom.OrderDetailsDAO;
-import lk.ijse.pos.dto.OrderDTO;
 import lk.ijse.pos.dto.OrderDetailsDTO;
-import lk.ijse.pos.entity.Order;
 import lk.ijse.pos.entity.OrderDetails;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 
